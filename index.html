@@ -577,7 +577,6 @@
     </nav>
 
     <script>
-        // Stato dell'applicazione
         let dailyData = {
             targetCalories: 2000,
             consumedCalories: 0,
@@ -592,11 +591,9 @@
 
         let currentScannedFood = null;
 
-        // Imposta data odierna
         const options = { weekday: 'long', day: 'numeric', month: 'short' };
         document.getElementById('currentDateDisplay').innerText = new Date().toLocaleDateString('it-IT', options);
 
-        // Controllo Chiave API salvata nel telefono
         window.addEventListener('DOMContentLoaded', () => {
             const savedKey = localStorage.getItem('cal_ai_gemini_key');
             if (savedKey) {
@@ -626,7 +623,6 @@
             return localStorage.getItem('cal_ai_gemini_key') || document.getElementById('userApiKeyInput').value.trim();
         }
 
-        // Gestione Cambio Schermate (Tabs)
         function switchView(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -645,7 +641,6 @@
             window.scrollTo(0, 0);
         }
 
-        // Trigger Input File
         const btnSelectImage = document.getElementById('btnSelectImage');
         const fileInput = document.getElementById('fileInput');
 
@@ -660,20 +655,17 @@
                 reader.onload = function(event) {
                     const base64Data = event.target.result;
                     
-                    // Mostra anteprima
                     const preview = document.getElementById('imagePreview');
                     preview.src = base64Data;
                     preview.style.display = 'block';
                     document.getElementById('scannerPlaceholder').style.display = 'none';
 
-                    // Avvia analisi Gemini
                     analyzeImageWithGemini(base64Data);
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Chiamata API Gemini per analisi immagine cibo
         async function analyzeImageWithGemini(base64Image) {
             const apiKey = getApiKey();
             if (!apiKey) {
@@ -688,11 +680,10 @@
             loadingSpinner.style.display = 'flex';
             resultCard.style.display = 'none';
 
-            // Estrai solo i dati base64 puri
             const base64Clean = base64Image.split(',')[1];
             const mimeType = base64Image.split(';')[0].split(':')[1];
 
-            const promptText = "Analizza questa immagine di cibo. Restituisci ESCLUSIVAMENTE un oggetto JSON valido (senza blocchi di codice markdown, solo la stringa JSON pura) con la seguente struttura esatta: {\"name\": \"Nome del piatto in italiano\", \"description\": \"Breve descrizione degli ingredienti\", \"calories\": numero_calorie_stime, \"protein\": grammi_proteine, \"carbs\": grammi_carbo, \"fats\": grammi_grassi}";
+            const promptText = "Analizza questa immagine di cibo. Restituisci ESCLUSIVAMENTE un oggetto JSON valido con questa struttura esatta, senza markdown o altro testo: {\"name\": \"Nome del piatto\", \"description\": \"Ingredienti\", \"calories\": 300, \"protein\": 20, \"carbs\": 30, \"fats\": 10}";
 
             const payload = {
                 contents: [
@@ -723,54 +714,52 @@
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     let rawText = data.candidates[0].content.parts[0].text;
                     
-                    // Pulizia eventuale formattazione markdown JSON
-                    rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+                    // Estrazione sicura del JSON anche se l'IA aggiunge blocchi di codice
+                    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        rawText = jsonMatch[0];
+                    }
                     
                     const foodInfo = JSON.parse(rawText);
                     currentScannedFood = foodInfo;
 
-                    // Mostra risultati
-                    document.getElementById('resFoodName').innerText = foodInfo.name;
-                    document.getElementById('resDescription').innerText = foodInfo.description;
-                    document.getElementById('resCals').innerText = foodInfo.calories + " kcal";
-                    document.getElementById('resMacros').innerText = `P: ${foodInfo.protein}g | C: ${foodInfo.carbs}g | G: ${foodInfo.fats}g`;
+                    document.getElementById('resFoodName').innerText = foodInfo.name || "Pasto rilevato";
+                    document.getElementById('resDescription').innerText = foodInfo.description || "Analisi completata";
+                    document.getElementById('resCals').innerText = (foodInfo.calories || 0) + " kcal";
+                    document.getElementById('resMacros').innerText = `P: ${foodInfo.protein || 0}g | C: ${foodInfo.carbs || 0}g | G: ${foodInfo.fats || 0}g`;
                     
                     resultCard.style.display = 'block';
                 } else {
-                    alert("Impossibile analizzare l'immagine. Verifica la chiave API o riprova.");
+                    alert("Risposta non valida dall'IA. Riprova con un'altra foto.");
                 }
             } catch (error) {
                 console.error("Errore API Gemini:", error);
                 loadingSpinner.style.display = 'none';
-                alert("Errore nell'analisi. Assicurati che la chiave API sia corretta.");
+                alert("Errore nell'analisi o formato non riconosciuto. Verifica la chiave API.");
             }
         }
 
-        // Aggiungi pasto al diario
         document.getElementById('btnAddMeal').addEventListener('click', () => {
             if (!currentScannedFood) return;
 
-            dailyData.consumedCalories += currentScannedFood.calories;
-            dailyData.protein += currentScannedFood.protein;
-            dailyData.carbs += currentScannedFood.carbs;
-            dailyData.fats += currentScannedFood.fats;
+            dailyData.consumedCalories += (currentScannedFood.calories || 0);
+            dailyData.protein += (currentScannedFood.protein || 0);
+            dailyData.carbs += (currentScannedFood.carbs || 0);
+            dailyData.fats += (currentScannedFood.fats || 0);
 
             dailyData.meals.push(currentScannedFood);
 
             updateDashboard();
             renderMealsList();
 
-            // Aggiorna consigli nutrizionista
             document.getElementById('aiAdviceText').innerText = `Ottima scelta il piatto "${currentScannedFood.name}"! Continua così per raggiungere i tuoi macro giornalieri.`;
 
-            // Reset scanner e torna alla home
             currentScannedFood = null;
             document.getElementById('resultCard').style.display = 'none';
             document.getElementById('imagePreview').style.display = 'none';
             document.getElementById('scannerPlaceholder').style.display = 'flex';
             document.getElementById('fileInput').value = '';
 
-            // Torna alla Home
             switchViewDirect('home');
         });
 
@@ -785,7 +774,6 @@
             window.scrollTo(0, 0);
         }
 
-        // Aggiorna la schermata Dashboard
         function updateDashboard() {
             const remaining = Math.max(0, dailyData.targetCalories - dailyData.consumedCalories);
             document.getElementById('caloriesRemaining').innerText = remaining;
@@ -799,7 +787,6 @@
             document.getElementById('fatsVal').innerText = `${dailyData.fats} / ${dailyData.targetFats}g`;
         }
 
-        // Renderizza la lista dei pasti
         function renderMealsList() {
             const container = document.getElementById('mealsListContainer');
             if (dailyData.meals.length === 0) {
