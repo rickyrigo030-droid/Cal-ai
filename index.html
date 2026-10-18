@@ -82,7 +82,6 @@
             padding: 0 20px;
         }
 
-        /* Dashboard Overview Card */
         .dashboard-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -176,7 +175,6 @@
         .macro-carbs { color: var(--accent-orange); }
         .macro-fats { color: var(--accent-purple); }
 
-        /* AI Nutritionist Box */
         .ai-box {
             background: rgba(16, 185, 129, 0.05);
             border: 1px solid rgba(16, 185, 129, 0.2);
@@ -213,7 +211,6 @@
             line-height: 1.4;
         }
 
-        /* Sections */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -227,7 +224,6 @@
             font-weight: 700;
         }
 
-        /* Views (Tabs) */
         .view-section {
             display: none;
         }
@@ -235,7 +231,6 @@
             display: block;
         }
 
-        /* Scanner Screen */
         .scanner-container {
             margin-top: 15px;
             text-align: center;
@@ -316,7 +311,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Modal & Key Config */
         .api-key-box {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -337,7 +331,6 @@
             font-size: 14px;
         }
 
-        /* Food Result Card */
         .result-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -354,7 +347,6 @@
             margin-bottom: 10px;
         }
 
-        /* Food Items List */
         .food-item-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -383,7 +375,6 @@
             color: var(--accent-green);
         }
 
-        /* Bottom Navigation Bar */
         nav.bottom-nav {
             position: fixed;
             bottom: 0;
@@ -426,7 +417,6 @@
 </head>
 <body>
 
-    <!-- Header Comune -->
     <header>
         <h1 class="logo">Cal AI</h1>
         <div class="header-actions">
@@ -439,7 +429,6 @@
 
     <div class="container">
 
-        <!-- BOX CONFIGURAZIONE CHIAVE API -->
         <div class="api-key-box" id="apiKeyBox" style="display: none;">
             <h3 style="font-size: 16px; color: var(--accent-green); margin-bottom: 6px;"><i class="fas fa-key"></i> Configura API Key Gemini</h3>
             <p style="font-size: 12px; color: var(--text-muted);">Incolla la tua chiave ottenuta da Google AI Studio. Verrà salvata solo nel tuo telefono.</p>
@@ -449,7 +438,6 @@
             </button>
         </div>
 
-        <!-- VISTA HOME -->
         <div id="homeView" class="view-section active">
             <div class="dashboard-card">
                 <div class="calories-title">Rimanenti / Target 2000 kcal</div>
@@ -496,7 +484,6 @@
             </div>
         </div>
 
-        <!-- VISTA SCANNER -->
         <div id="scannerView" class="view-section">
             <div class="section-header">
                 <h2 class="section-title">Scanner IA</h2>
@@ -523,7 +510,6 @@
                     <span style="color: var(--accent-green); font-weight: 600; font-size: 14px;">Analisi Gemini in corso...</span>
                 </div>
 
-                <!-- Risultato Scansione -->
                 <div class="result-card" id="resultCard">
                     <h3 id="resFoodName">Nome Cibo</h3>
                     <p id="resDescription" style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;"></p>
@@ -546,7 +532,6 @@
             </div>
         </div>
 
-        <!-- VISTA DIARIO -->
         <div id="diarioView" class="view-section">
             <div class="section-header">
                 <h2 class="section-title">Diario Alimentare</h2>
@@ -560,7 +545,6 @@
 
     </div>
 
-    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="switchView('home')">
             <i class="fas fa-home"></i>
@@ -669,7 +653,7 @@
         async function analyzeImageWithGemini(base64Image) {
             const apiKey = getApiKey();
             if (!apiKey) {
-                alert("Inserisci la tua API Key nelle impostazioni (icona ingranaggio in alto a destra) prima di scansionare.");
+                alert("Inserisci la tua API Key nelle impostazioni prima di scansionare.");
                 document.getElementById('apiKeyBox').style.display = 'block';
                 return;
             }
@@ -683,7 +667,7 @@
             const base64Clean = base64Image.split(',')[1];
             const mimeType = base64Image.split(';')[0].split(':')[1];
 
-            const promptText = "Analizza questa immagine di cibo. Restituisci un JSON con questa struttura esatta: {\"name\": \"Nome\", \"description\": \"Ingredienti\", \"calories\": 300, \"protein\": 20, \"carbs\": 30, \"fats\": 10}";
+            const promptText = "Analizza questa immagine di cibo. Restituisci ESCLUSIVAMENTE un JSON con questa struttura esatta: {\"name\": \"Nome\", \"description\": \"Ingredienti\", \"calories\": 300, \"protein\": 20, \"carbs\": 30, \"fats\": 10}";
 
             const payload = {
                 contents: [
@@ -702,6 +686,7 @@
             };
 
             try {
+                // Endpoint aggiornato al modello stabile gemini-1.5-flash
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -714,7 +699,6 @@
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     let rawText = data.candidates[0].content.parts[0].text;
                     
-                    // Pulizia avanzata per trovare le parentesi graffe del JSON ignorando tutto il resto
                     const firstBrace = rawText.indexOf('{');
                     const lastBrace = rawText.lastIndexOf('}');
                     
