@@ -1,964 +1,982 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Cal AI - Tracker & Scanner Nutrizionale</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<style>
-:root {
---bg-color: #090a0f;
---card-bg: #13151c;
---card-hover: #1b1e29;
---accent-green: #10b981;
---accent-green-glow: rgba(16, 185, 129, 0.25);
---accent-blue: #3b82f6;
---accent-purple: #8b5cf6;
---accent-orange: #f59e0b;
---text-main: #f8fafc;
---text-muted: #94a3b8;
---border-color: #1e2230;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cal AI - Tracker & Scanner Nutrizionale</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #090a0f;
+            --card-bg: #13151c;
+            --card-hover: #1b1e29;
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16, 185, 129, 0.25);
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-orange: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1e2230;
+        }
 
-* {
-box-sizing: border-box;
-margin: 0;
-padding: 0;
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
--webkit-tap-highlight-color: transparent;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body {
-background-color: var(--bg-color);
-color: var(--text-main);
-display: flex;
-justify-content: center;
-min-height: 100vh;
-}
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
 
-.app-container {
-width: 100%;
-max-width: 480px;
-display: flex;
-flex-direction: column;
-position: relative;
-min-height: 100vh;
-padding-bottom: 90px;
-}
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
 
-.screen {
-display: none;
-padding: 20px;
-flex-direction: column;
-gap: 20px;
-animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
+        .screen {
+            display: none;
+            padding: 20px;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-.screen.active {
-display: flex;
-}
+        .screen.active {
+            display: flex;
+        }
 
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(8px); }
-to { opacity: 1; transform: translateY(0); }
-}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-.header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding-top: 10px;
-padding-bottom: 5px;
-}
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            padding-bottom: 5px;
+        }
 
-.header h1 {
-font-size: 28px;
-font-weight: 800;
-background: linear-gradient(135deg, #34d399, #059669);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-letter-spacing: -0.5px;
-}
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #34d399, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
 
-.date-badge {
-background-color: var(--card-bg);
-padding: 8px 16px;
-border-radius: 24px;
-font-size: 13px;
-color: var(--text-muted);
-border: 1px solid var(--border-color);
-font-weight: 600;
-box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
+        .date-badge {
+            background-color: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 13px;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
 
-.dashboard-card {
-background: var(--card-bg);
-border-radius: 28px;
-padding: 24px;
-border: 1px solid var(--border-color);
-box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
-position: relative;
-overflow: hidden;
-}
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
 
-.dashboard-card::before {
-content: '';
-position: absolute;
-top: 0; left: 0; right: 0; height: 3px;
-background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
-}
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+        }
 
-.calorie-main {
-text-align: center;
-}
+        .calorie-main {
+            text-align: center;
+        }
 
-.calorie-number {
-font-size: 48px;
-font-weight: 800;
-margin: 6px 0;
-letter-spacing: -1.5px;
-color: var(--text-main);
-}
+        .calorie-number {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 6px 0;
+            letter-spacing: -1.5px;
+            color: var(--text-main);
+        }
 
-.calorie-target {
-font-size: 12px;
-color: var(--text-muted);
-text-transform: uppercase;
-letter-spacing: 1px;
-font-weight: 700;
-}
+        .calorie-target {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
 
-.progress-bar-container {
-width: 100%;
-height: 10px;
-background-color: var(--border-color);
-border-radius: 6px;
-overflow: hidden;
-margin: 20px 0 10px 0;
-}
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 20px 0 10px 0;
+        }
 
-.progress-bar {
-height: 100%;
-background: linear-gradient(90deg, #10b981, #34d399);
-width: 0%;
-border-radius: 6px;
-transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-box-shadow: 0 0 12px var(--accent-green-glow);
-}
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px var(--accent-green-glow);
+        }
 
-.macros-grid {
-display: grid;
-grid-template-columns: repeat(3, 1fr);
-gap: 12px;
-margin-top: 16px;
-}
+        .macros-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
 
-.macro-box {
-background-color: rgba(255, 255, 255, 0.02);
-border-radius: 18px;
-padding: 14px 10px;
-text-align: center;
-border: 1px solid var(--border-color);
-}
+        .macro-box {
+            background-color: rgba(255, 255, 255, 0.02);
+            border-radius: 18px;
+            padding: 14px 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
 
-.macro-title {
-font-size: 11px;
-color: var(--text-muted);
-margin-bottom: 6px;
-text-transform: uppercase;
-font-weight: 700;
-letter-spacing: 0.5px;
-}
+        .macro-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
 
-.macro-val {
-font-size: 14px;
-font-weight: 700;
-}
+        .macro-val {
+            font-size: 14px;
+            font-weight: 700;
+        }
 
-.macro-protein { color: var(--accent-blue); }
-.macro-carbs { color: var(--accent-orange); }
-.macro-fats { color: var(--accent-purple); }
+        .macro-protein { color: var(--accent-blue); }
+        .macro-carbs { color: var(--accent-orange); }
+        .macro-fats { color: var(--accent-purple); }
 
-.advice-card {
-background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.05));
-border: 1px solid rgba(59, 130, 246, 0.3);
-border-radius: 20px;
-padding: 18px;
-display: flex;
-flex-direction: column;
-gap: 8px;
-}
+        .advice-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-.advice-title {
-font-size: 14px;
-font-weight: 700;
-color: var(--accent-blue);
-display: flex;
-align-items: center;
-gap: 8px;
-}
+        .advice-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.advice-text {
-font-size: 13px;
-color: var(--text-muted);
-line-height: 1.4;
-}
+        .advice-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
 
-.section-title {
-font-size: 17px;
-font-weight: 700;
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-top: 5px;
-letter-spacing: -0.3px;
-}
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+            letter-spacing: -0.3px;
+        }
 
-.food-list {
-display: flex;
-flex-direction: column;
-gap: 12px;
-}
+        .food-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.food-item {
-background: var(--card-bg);
-border-radius: 20px;
-padding: 14px 16px;
-display: flex;
-align-items: center;
-gap: 16px;
-border: 1px solid var(--border-color);
-box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-}
+        .food-item {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
 
-.food-img {
-width: 56px;
-height: 56px;
-border-radius: 16px;
-object-fit: cover;
-background-color: var(--border-color);
-flex-shrink: 0;
-}
+        .food-img {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            object-fit: cover;
+            background-color: var(--border-color);
+            flex-shrink: 0;
+        }
 
-.food-info { flex: 1; }
-.food-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; letter-spacing: -0.2px; }
-.food-details { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-.food-calories { text-align: right; font-weight: 800; font-size: 15px; color: var(--accent-green); }
+        .food-info { flex: 1; }
+        .food-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; letter-spacing: -0.2px; }
+        .food-details { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+        .food-calories { text-align: right; font-weight: 800; font-size: 15px; color: var(--accent-green); }
 
-.delete-btn {
-background: rgba(239, 68, 68, 0.1);
-border: none;
-color: #ef4444;
-cursor: pointer;
-width: 36px;
-height: 36px;
-border-radius: 12px;
-display: flex;
-align-items: center;
-justify-content: center;
-flex-shrink: 0;
-}
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
 
-.empty-state {
-text-align: center;
-padding: 45px 20px;
-color: var(--text-muted);
-font-size: 14px;
-background: var(--card-bg);
-border-radius: 22px;
-border: 1px dashed var(--border-color);
-line-height: 1.5;
-}
+        .empty-state {
+            text-align: center;
+            padding: 45px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+            background: var(--card-bg);
+            border-radius: 22px;
+            border: 1px dashed var(--border-color);
+            line-height: 1.5;
+        }
 
-.date-picker-container {
-display: flex;
-gap: 10px;
-overflow-x: auto;
-padding-bottom: 8px;
-scrollbar-width: none;
-}
-.date-picker-container::-webkit-scrollbar { display: none; }
+        .date-picker-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+        }
+        .date-picker-container::-webkit-scrollbar { display: none; }
 
-.date-card {
-min-width: 65px;
-padding: 14px 8px;
-background: var(--card-bg);
-border: 1px solid var(--border-color);
-border-radius: 18px;
-text-align: center;
-cursor: pointer;
-transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
+        .date-card {
+            min-width: 65px;
+            padding: 14px 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-.date-card.active {
-background: linear-gradient(135deg, #10b981, #059669);
-color: #fff;
-border-color: transparent;
-font-weight: 700;
-box-shadow: 0 8px 20px var(--accent-green-glow);
-transform: translateY(-2px);
-}
+        .date-card.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 8px 20px var(--accent-green-glow);
+            transform: translateY(-2px);
+        }
 
-.date-card .day-name { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; opacity: 0.8; letter-spacing: 0.5px; }
-.date-card .day-num { font-size: 18px; font-weight: 800; }
+        .date-card .day-name { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; opacity: 0.8; letter-spacing: 0.5px; }
+        .date-card .day-num { font-size: 18px; font-weight: 800; }
 
-.scanner-card {
-background: var(--card-bg);
-border-radius: 28px;
-padding: 20px;
-border: 1px solid var(--border-color);
-display: flex;
-flex-direction: column;
-gap: 18px;
-box-shadow: 0 12px 35px rgba(0,0,0,0.5);
-}
+        .scanner-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+        }
 
-.camera-container {
-width: 100%;
-height: 280px;
-border-radius: 20px;
-overflow: hidden;
-background-color: #000;
-position: relative;
-display: flex;
-justify-content: center;
-align-items: center;
-border: 1px solid var(--border-color);
-}
+        .camera-container {
+            width: 100%;
+            height: 280px;
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: #000;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
 
-#video, #photo-preview {
-width: 100%;
-height: 100%;
-object-fit: cover;
-}
+        #video, #photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.scan-overlay {
-position: absolute;
-top: 24px; left: 24px; right: 24px; bottom: 24px;
-border: 2px dashed rgba(255,255,255,0.3);
-border-radius: 16px;
-pointer-events: none;
-box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
-}
+        .scan-overlay {
+            position: absolute;
+            top: 24px; left: 24px; right: 24px; bottom: 24px;
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 16px;
+            pointer-events: none;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+        }
 
-.btn-action {
-background: linear-gradient(135deg, #10b981, #059669);
-color: white;
-border: none;
-border-radius: 18px;
-padding: 16px;
-font-size: 16px;
-font-weight: 700;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 10px;
-cursor: pointer;
-width: 100%;
-box-shadow: 0 8px 25px var(--accent-green-glow);
-}
+        .btn-action {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 8px 25px var(--accent-green-glow);
+        }
 
-.btn-secondary {
-background: var(--card-bg);
-color: var(--text-main);
-border: 1px solid var(--border-color);
-box-shadow: none;
-}
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+        }
 
-.scanner-actions {
-display: flex;
-gap: 12px;
-}
+        .scanner-actions {
+            display: flex;
+            gap: 12px;
+        }
 
-.loading-spinner {
-display: none;
-text-align: center;
-padding: 20px;
-font-size: 15px;
-color: var(--accent-green);
-font-weight: 600;
-}
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-size: 15px;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
 
-.loading-spinner i {
-font-size: 32px;
-margin-bottom: 10px;
-}
+        .loading-spinner i {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
 
-.recipe-book-container {
-display: flex;
-flex-direction: column;
-gap: 8px;
-max-height: 180px;
-overflow-y: auto;
-}
+        .recipe-book-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
 
-.recipe-item {
-background: var(--card-hover);
-border: 1px solid var(--border-color);
-padding: 10px 14px;
-border-radius: 14px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-cursor: pointer;
-transition: background 0.2s;
-}
+        .recipe-item {
+            background: var(--card-hover);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
 
-.recipe-item:active {
-background: rgba(16, 185, 129, 0.15);
-}
+        .recipe-item:active {
+            background: rgba(16, 185, 129, 0.15);
+        }
 
-.recipe-info span {
-font-size: 14px;
-font-weight: 700;
-display: block;
-}
+        .recipe-info span {
+            font-size: 14px;
+            font-weight: 700;
+            display: block;
+        }
 
-.recipe-info small {
-font-size: 11px;
-color: var(--text-muted);
-}
+        .recipe-info small {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
 
-.recipe-add-badge {
-background: var(--accent-green);
-color: #000;
-font-size: 12px;
-font-weight: 800;
-padding: 6px 12px;
-border-radius: 10px;
-}
+        .recipe-add-badge {
+            background: var(--accent-green);
+            color: #000;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 10px;
+        }
 
-.navbar {
-position: fixed;
-bottom: 0;
-left: 50%;
-transform: translateX(-50%);
-width: 100%;
-max-width: 480px;
-background: rgba(19, 21, 28, 0.85);
-backdrop-filter: blur(16px);
--webkit-backdrop-filter: blur(16px);
-border-top: 1px solid var(--border-color);
-display: flex;
-justify-content: space-around;
-padding: 12px 0 20px 0;
-z-index: 100;
-}
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(19, 21, 28, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 20px 0;
+            z-index: 100;
+        }
 
-.nav-item {
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 5px;
-color: var(--text-muted);
-text-decoration: none;
-font-size: 11px;
-font-weight: 600;
-cursor: pointer;
-width: 33%;
-transition: color 0.25s, transform 0.25s;
-}
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 33%;
+            transition: color 0.25s, transform 0.25s;
+        }
 
-.nav-item i {
-font-size: 20px;
-}
+        .nav-item i {
+            font-size: 20px;
+        }
 
-.nav-item.active {
-color: var(--accent-green);
-transform: translateY(-2px);
-}
-</style>
+        .nav-item.active {
+            color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
 
-<div class="app-container">
-
-<!-- 1. HOME -->
-<div class="screen active" id="screen-home">
-<div class="header">
-<h1>Cal AI</h1>
-<div class="date-badge" id="home-today-date">Oggi</div>
-</div>
-
-<div class="dashboard-card">
-<div class="calorie-main">
-<span class="calorie-target">Rimanenti / Target 2000 kcal</span>
-<div class="calorie-number" id="calories-left">2000</div>
-<span style="font-size: 13px; color: var(--text-muted); font-weight: 500;" id="calories-consumed">Consumate: 0 kcal</span>
-</div>
-
-<div class="progress-bar-container">
-<div class="progress-bar" id="calorie-progress"></div>
-</div>
-
-<div class="macros-grid">
-<div class="macro-box">
-<div class="macro-title">Proteine</div>
-<div class="macro-val macro-protein"><span id="prot-val">0</span> / 150g</div>
-</div>
-<div class="macro-box">
-<div class="macro-title">Carbo</div>
-<div class="macro-val macro-carbs"><span id="carbs-val">0</span> / 200g</div>
-</div>
-<div class="macro-box">
-<div class="macro-title">Grassi</div>
-<div class="macro-val macro-fats"><span id="fats-val">0</span> / 65g</div>
-</div>
-</div>
-</div>
-
-<div class="advice-card">
-<div class="advice-title">
-<i class="fa-solid fa-lightbulb"></i> Consigli del Nutrizionista IA
-</div>
-<div class="advice-text" id="ai-advice-text">
-Analisi in corso... Inizia a registrare i pasti per ricevere consigli personalizzati su cosa mangiare.
-</div>
-</div>
-
-<div class="section-title">
-<span>Pasti di Oggi</span>
-<i class="fa-solid fa-utensils" style="color: var(--text-muted); font-size: 14px;"></i>
-</div>
-
-<div class="food-list" id="home-food-list">
-<div class="empty-state">
-Nessun cibo registrato oggi.<br>Usa lo scanner o il ricettario per iniziare!
-</div>
-</div>
-</div>
-
-<!-- 2. DIARIO / CALENDARIO -->
-<div class="screen" id="screen-calendar">
-<div class="header">
-<h1>Storico Pasti</h1>
-<div class="date-badge" id="selected-date-label">Oggi</div>
-</div>
-
-<div class="date-picker-container" id="date-picker"></div>
-
-<div class="dashboard-card" style="padding: 18px;">
-<div style="display: flex; justify-content: space-between; align-items: center;">
-<span style="color: var(--text-muted); font-size: 14px; font-weight: 600;">Totale Giornaliero:</span>
-<span style="font-size: 22px; font-weight: 800; color: var(--accent-green);" id="history-total-kcal">0 kcal</span>
-</div>
-</div>
-
-<div class="section-title">
-<span>Diario Alimentare</span>
-</div>
-
-<div class="food-list" id="history-food-list"></div>
-</div>
-
-<!-- 3. SCANNER IA + ARMADIETTO / RICETTARIO RAPIDO -->
-<div class="screen" id="screen-scanner">
-<div class="header">
-<h1>Scanner IA</h1>
-<div class="date-badge">Riconoscimento</div>
-</div>
-
-<div class="scanner-card">
-<div class="camera-container">
-<video id="video" autoplay playsinline></video>
-<img id="photo-preview" style="display: none;" alt="Anteprima Cibo">
-<div class="scan-overlay"></div>
-</div>
-
-<div class="loading-spinner" id="loading-spinner">
-<i class="fa-solid fa-circle-notch fa-spin"></i>
-<div>Analisi Gemini in corso...</div>
-</div>
-
-<div class="scanner-actions" id="scanner-buttons">
-<button class="btn-action btn-secondary" id="gallery-btn">
-<i class="fa-solid fa-image"></i> Galleria
-</button>
-<input type="file" id="file-input" accept="image/*" style="display: none;">
-
-<button class="btn-action" id="capture-btn">
-<i class="fa-solid fa-camera"></i> Scansiona
-</button>
-</div>
-</div>
-
-<div class="section-title">
-<span>Armadietto / Ricettario (Cibi Frequenti)</span>
-<i class="fa-solid fa-book-open" style="color: var(--text-muted); font-size: 14px;"></i>
-</div>
-<div class="recipe-book-container" id="recipe-book-list">
-<div class="empty-state" style="padding: 20px;">
-Nessun cibo salvato nel ricettario.<br>Scansiona un alimento per aggiungerlo qui automaticamente!
-</div>
-</div>
-</div>
-
-<!-- NAVBAR -->
-<div class="navbar">
-<div class="nav-item active" onclick="switchTab('screen-home', this)">
-<i class="fa-solid fa-house"></i>
-<span>Home</span>
-</div>
-<div class="nav-item" onclick="switchTab('screen-scanner', this)">
-<i class="fa-solid fa-camera"></i>
-<span>Scanner</span>
-</div>
-<div class="nav-item" onclick="switchTab('screen-calendar', this)">
-<i class="fa-solid fa-calendar-days"></i>
-<span>Diario</span>
-</div>
-</div>
-
-</div>
-
-<script>
-const TARGET = { calories: 2000, protein: 150, carbs: 200, fats: 65 };
-
-let db = JSON.parse(localStorage.getItem('calai_db')) || {};
-let recipeBook = JSON.parse(localStorage.getItem('calai_recipebook')) || [];
-let selectedCalendarDate = getFormattedDate(new Date());
-let cameraStream = null;
-
-document.addEventListener('DOMContentLoaded', () => {
-initDateHeader();
-renderHome();
-renderCalendarSelector();
-renderCalendarHistory();
-renderRecipeBook();
-});
-
-function getFormattedDate(date) {
-return date.toISOString().split('T')[0];
-}
-
-function initDateHeader() {
-const todayStr = new Date().toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' });
-document.getElementById('home-today-date').innerText = todayStr;
-}
-
-function switchTab(screenId, navElement) {
-document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-document.getElementById(screenId).classList.add('active');
-navElement.classList.add('active');
-
-if (screenId === 'screen-scanner') {
-startCamera();
-renderRecipeBook();
-} else {
-stopCamera();
-}
-
-if (screenId === 'screen-home') renderHome();
-if (screenId === 'screen-calendar') renderCalendarHistory();
-}
-
-function renderHome() {
-const todayKey = getFormattedDate(new Date());
-const todayFoods = db[todayKey] || [];
-
-const totals = todayFoods.reduce((acc, item) => {
-acc.calories += item.calories;
-acc.protein += item.protein;
-acc.carbs += item.carbs;
-acc.fats += item.fats;
-return acc;
-}, { calories: 0, protein: 0, carbs: 0, fats: 0 });
-
-const remaining = Math.max(0, TARGET.calories - totals.calories);
-document.getElementById('calories-left').innerText = remaining;
-document.getElementById('calories-consumed').innerText = Consumate: ${totals.calories} kcal`;
-
-const progress = Math.min(100, (totals.calories / TARGET.calories) * 100);
-document.getElementById('calorie-progress').style.width = ``${progress}%`;
-
-document.getElementById('prot-val').innerText = totals.protein;
-document.getElementById('carbs-val').innerText = totals.carbs;
-document.getElementById('fats-val').innerText = totals.fats;
-
-updateAiAdvice(totals);
-
-const listContainer = document.getElementById('home-food-list');
-if (todayFoods.length === 0) {
-listContainer.innerHTML = <div class="empty-state"&gt;Nessun cibo registrato oggi.&lt;br&gt;Usa lo scanner o il ricettario per iniziare!&lt;/div>;
-} else {
-listContainer.innerHTML = todayFoods.map(food => createFoodItemHTML(food, todayKey)).join('');
-}
-}
-
-function updateAiAdvice(totals) {
-const adviceEl = document.getElementById('ai-advice-text');
-const remProt = TARGET.protein - totals.protein;
-const remCals = TARGET.calories - totals.calories;
-
-if (remCals <= 0) {
-adviceEl.innerHTML = "Hai raggiunto o superato il tuo obiettivo calorico giornaliero. Ottimo lavoro!";
-return;
-}
-
-if (remProt > 40) {
-adviceEl.innerHTML = Ti mancano &lt;strong&gt;${remProt}g di proteine</strong>. Cerca di inserire fonti proteiche magre come pollo, tacchino o yogurt greco.; } else { adviceEl.innerHTML =Ti rimangono <strong>${remCals} kcal&lt;/strong&gt;. Scegli un pasto bilanciato per chiudere la giornata nel migliore dei modi.;
-}
-}
-
-function renderCalendarSelector() {
-const container = document.getElementById('date-picker');
-container.innerHTML = '';
-
-for (let i = 6; i >= 0; i--) {
-const d = new Date();
-d.setDate(d.getDate() - i);
-const dateKey = getFormattedDate(d);
-const dayName = d.toLocaleDateString('it-IT', { weekday: 'short' });
-const dayNum = d.getDate();
-
-const isSelected = dateKey === selectedCalendarDate;
-const dateCard = document.createElement('div');
-dateCard.className = date-card ${isSelected ? 'active' : ''}`;
-dateCard.onclick = () => {
-selectedCalendarDate = dateKey;
-renderCalendarSelector();
-renderCalendarHistory();
-};
-
-dateCard.innerHTML = &lt;div class="day-name"&gt;${dayName}</div>
-<div class="day-num">${dayNum}&lt;/div&gt;;
-container.appendChild(dateCard);
-}
-}
-
-function renderCalendarHistory() {
-const historyFoods = db[selectedCalendarDate] || [];
-const listContainer = document.getElementById('history-food-list');
-const totalKcalEl = document.getElementById('history-total-kcal');
-
-document.getElementById('selected-date-label').innerText = selectedCalendarDate;
-
-const totalKcal = historyFoods.reduce((sum, item) => sum + item.calories, 0);
-totalKcalEl.innerText = ``${totalKcal} kcal`;
-
-if (historyFoods.length === 0) {
-listContainer.innerHTML = <div class="empty-state"&gt;Nessun cibo registrato per questa data.&lt;/div>;
-} else {
-listContainer.innerHTML = historyFoods.map(food => createFoodItemHTML(food, selectedCalendarDate)).join('');
-}
-}
-
-function renderRecipeBook() {
-const container = document.getElementById('recipe-book-list');
-if (recipeBook.length === 0) {
-container.innerHTML = <div class="empty-state" style="padding: 20px;"&gt;Nessun cibo salvato nel ricettario.&lt;br&gt;Scansiona un alimento per aggiungerlo qui!&lt;/div>;
-return;
-}
-
-container.innerHTML = recipeBook.map((food, index) => &lt;div class="recipe-item" onclick="addFromRecipeBook(${index})">
-<div class="recipe-info">
-<span>${food.name}&lt;/span&gt; &lt;small&gt;P: ${food.protein}g • C: ${food.carbs}g &bull; G: ${food.fats}g</small>
-</div>
-<div class="recipe-add-badge">+${food.calories} kcal&lt;/div&gt; &lt;/div&gt;).join('');
-}
-
-function addFromRecipeBook(index) {
-const foodTemplate = recipeBook[index];
-const todayKey = getFormattedDate(new Date());
-
-const newFood = {
-...foodTemplate,
-id: Date.now()
-};
-
-if (!db[todayKey]) db[todayKey] = [];
-db[todayKey].push(newFood);
-saveDB();
-
-switchTab('screen-home', document.querySelectorAll('.nav-item')[0]);
-}
-
-async function startCamera() {
-const video = document.getElementById('video');
-const photoPreview = document.getElementById('photo-preview');
-photoPreview.style.display = 'none';
-video.style.display = 'block';
-
-try {
-cameraStream = await navigator.mediaDevices.getUserMedia({
-video: { facingMode: 'environment' },
-audio: false
-});
-video.srcObject = cameraStream;
-} catch (err) {
-console.warn("Fotocamera non disponibile, usa la galleria.", err);
-}
-}
-
-function stopCamera() {
-if (cameraStream) {
-cameraStream.getTracks().forEach(track => track.stop());
-cameraStream = null;
-}
-}
-
-function compressAndProcessImage(imgSource) {
-const canvas = document.createElement('canvas');
-const maxDimension = 600;
-let width = imgSource.videoWidth || imgSource.width || 640;
-let height = imgSource.videoHeight || imgSource.height || 480;
-
-if (width > height) {
-if (width > maxDimension) {
-height *= maxDimension / width;
-width = maxDimension;
-}
-} else {
-if (height > maxDimension) {
-width *= maxDimension / height;
-height = maxDimension;
-}
-}
-
-canvas.width = width;
-canvas.height = height;
-const ctx = canvas.getContext('2d');
-ctx.drawImage(imgSource, 0, 0, width, height);
-
-const imageData = canvas.toDataURL('image/jpeg', 0.7);
-
-const photoPreview = document.getElementById('photo-preview');
-photoPreview.src = imageData;
-photoPreview.style.display = 'block';
-document.getElementById('video').style.display = 'none';
-stopCamera();
-
-processImageWithAI(imageData);
-}
-
-document.getElementById('capture-btn').addEventListener('click', () => {
-const video = document.getElementById('video');
-compressAndProcessImage(video);
-});
-
-document.getElementById('gallery-btn').addEventListener('click', () => {
-document.getElementById('file-input').click();
-});
-
-document.getElementById('file-input').addEventListener('change', (e) => {
-const file = e.target.files[0];
-if (file) {
-const reader = new FileReader();
-reader.onload = function (evt) {
-const img = new Image();
-img.onload = function() {
-compressAndProcessImage(img);
-};
-img.src = evt.target.result;
-};
-reader.readAsDataURL(file);
-}
-});
-
-// CHIAMATA API GEMINI
-async function processImageWithAI(imageData) {
-const spinner = document.getElementById('loading-spinner');
-const btns = document.getElementById('scanner-buttons');
-
-spinner.style.display = 'block';
-btns.style.display = 'none';
-
-const base64Data = imageData.split(',')[1];
-
-// CHIAVE API INSERITA CORRETTAMENTE
-const apiKey = "AQ.Ab8RN6JlvTW-mAz-_vB3xVoVRBB6t6FfCG5GCN2huOmmX8Egrg";span_0span_0
-
-const endpoint = https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-const promptText = "Analizza questa foto. Se contiene cibo, restituisci un oggetto JSON con questi campi esatti: name (stringa, nome del piatto in italiano), calories (numero intero), protein (grammi, numero), carbs (grammi, numero), fats (grammi, numero). Se NON è cibo o non riesci a riconoscerlo, restituisci un JSON con name: 'Oggetto non riconosciuto' e tutti i valori a 0.";
-
-const requestBody = {
-contents: [{
-parts: [
-{ text: promptText },
-{ inline_data: { mime_type: "image/jpeg", data: base64Data } }
- ]
-}],
-generationConfig: { response_mime_type: "application/json" }
-};
-
-const controller = new AbortController();
-const timeoutId = setTimeout(() => controller.abort(), 12000);
-
-try {
-const response = await fetch(endpoint, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(requestBody),
-signal: controller.signal
-});
-
-clearTimeout(timeoutId);
-
-if (!response.ok) {
-throw new Error(Errore API:${response.status}`);
-}
-
-const data = await response.json();
-const aiResponseText = data.candidates[0].content.parts[0].text;
-const foodData = JSON.parse(aiResponseText);
-
-if (foodData.calories > 0) {
-const todayKey = getFormattedDate(new Date());
-const newFood = {
-...foodData,
-id: Date.now(),
-image: imageData
-};
-
-if (!db[todayKey]) db[todayKey] = [];
-db[todayKey].push(newFood);
-saveDB();
-
-if (!recipeBook.some(item => item.name.toLowerCase() === foodData.name.toLowerCase())) {
-recipeBook.push(foodData);
-saveRecipeBook();
-}
-
-switchTab('screen-home', document.querySelectorAll('.nav-item')[0]);
-} else {
-alert("Non ho riconosciuto del cibo nell'immagine. Riprova con un'inquadratura più chiara!");
-switchTab('screen-scanner', document.querySelectorAll('.nav-item')[1]);
-}
-} catch (error) {
-console.error("Errore durante l'analisi con Gemini:", error);
-alert("Si è verificato un errore durante l'analisi o la chiave API non è stata accettata.");
-switchTab('screen-scanner', document.querySelectorAll('.nav-item')[1]);
-} finally {
-spinner.style.display = 'none';
-btns.style.display = 'flex';
-}
-}
-
-function createFoodItemHTML(food, dateKey) {
-return &lt;div class="food-item"&gt; &lt;img src="${food.image || 'https://via.placeholder.com/56'}" class="food-img" alt="${food.name}"&gt; &lt;div class="food-info"&gt; &lt;div class="food-name"&gt;${food.name}</div>
-<div class="food-details">P: ${food.protein}g &bull; C: ${food.carbs}g • G: ${food.fats}g&lt;/div&gt; &lt;/div&gt; &lt;div class="food-calories"&gt;+${food.calories} kcal</div>
-<button class="delete-btn" onclick="deleteFood(${food.id}, '${dateKey}')"&gt; &lt;i class="fa-solid fa-trash"&gt;&lt;/i&gt; &lt;/button&gt; &lt;/div&gt;;
-}
-
-function deleteFood(id, dateKey) {
-if (db[dateKey]) {
-db[dateKey] = db[dateKey].filter(item => item.id !== id);
-saveDB();
-renderHome();
-renderCalendarHistory();
-}
-}
-
-function saveDB() {
-localStorage.setItem('calai_db', JSON.stringify(db));
-}
-
-function saveRecipeBook() {
-localStorage.setItem('calai_recipebook', JSON.stringify(recipeBook));
-}
-</script>
+    <div class="app-container">
+
+        <!-- 1. HOME -->
+        <div class="screen active" id="screen-home">
+            <div class="header">
+                <h1>Cal AI</h1>
+                <div class="date-badge" id="home-today-date">Oggi</div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="calorie-main">
+                    <span class="calorie-target">Rimanenti / Target 2000 kcal</span>
+                    <div class="calorie-number" id="calories-left">2000</div>
+                    <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;" id="calories-consumed">Consumate: 0 kcal</span>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="calorie-progress"></div>
+                </div>
+
+                <div class="macros-grid">
+                    <div class="macro-box">
+                        <div class="macro-title">Proteine</div>
+                        <div class="macro-val macro-protein"><span id="prot-val">0</span> / 150g</div>
+                    </div>
+                    <div class="macro-box">
+                        <div class="macro-title">Carbo</div>
+                        <div class="macro-val macro-carbs"><span id="carbs-val">0</span> / 200g</div>
+                    </div>
+                    <div class="macro-box">
+                        <div class="macro-title">Grassi</div>
+                        <div class="macro-val macro-fats"><span id="fats-val">0</span> / 65g</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advice-card">
+                <div class="advice-title">
+                    <i class="fa-solid fa-lightbulb"></i> Consigli del Nutrizionista IA
+                </div>
+                <div class="advice-text" id="ai-advice-text">
+                    Analisi in corso... Inizia a registrare i pasti per ricevere consigli personalizzati su cosa mangiare.
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>Pasti di Oggi</span>
+                <i class="fa-solid fa-utensils" style="color: var(--text-muted); font-size: 14px;"></i>
+            </div>
+
+            <div class="food-list" id="home-food-list">
+                <div class="empty-state">
+                    Nessun cibo registrato oggi.<br>Usa lo scanner o il ricettario per iniziare!
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DIARIO / CALENDARIO -->
+        <div class="screen" id="screen-calendar">
+            <div class="header">
+                <h1>Storico Pasti</h1>
+                <div class="date-badge" id="selected-date-label">Oggi</div>
+            </div>
+
+            <div class="date-picker-container" id="date-picker"></div>
+
+            <div class="dashboard-card" style="padding: 18px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-muted); font-size: 14px; font-weight: 600;">Totale Giornaliero:</span>
+                    <span style="font-size: 22px; font-weight: 800; color: var(--accent-green);" id="history-total-kcal">0 kcal</span>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>Diario Alimentare</span>
+            </div>
+
+            <div class="food-list" id="history-food-list"></div>
+        </div>
+
+        <!-- 3. SCANNER IA + ARMADIETTO / RICETTARIO RAPIDO -->
+        <div class="screen" id="screen-scanner">
+            <div class="header">
+                <h1>Scanner IA</h1>
+                <div class="date-badge">Riconoscimento</div>
+            </div>
+
+            <div class="scanner-card">
+                <div class="camera-container">
+                    <video id="video" autoplay playsinline></video>
+                    <img id="photo-preview" style="display: none;" alt="Anteprima Cibo">
+                    <div class="scan-overlay"></div>
+                </div>
+
+                <div class="loading-spinner" id="loading-spinner">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <div>Analisi Gemini in corso...</div>
+                </div>
+
+                <div class="scanner-actions" id="scanner-buttons">
+                    <button class="btn-action btn-secondary" id="gallery-btn">
+                        <i class="fa-solid fa-image"></i> Galleria
+                    </button>
+                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+                    <button class="btn-action" id="capture-btn">
+                        <i class="fa-solid fa-camera"></i> Scansiona
+                    </button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>Armadietto / Ricettario (Cibi Frequenti)</span>
+                <i class="fa-solid fa-book-open" style="color: var(--text-muted); font-size: 14px;"></i>
+            </div>
+            <div class="recipe-book-container" id="recipe-book-list">
+                <div class="empty-state" style="padding: 20px;">
+                    Nessun cibo salvato nel ricettario.<br>Scansiona un alimento per aggiungerlo qui automaticamente!
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVBAR -->
+        <div class="navbar">
+            <div class="nav-item active" onclick="switchTab('screen-home', this)">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('screen-scanner', this)">
+                <i class="fa-solid fa-camera"></i>
+                <span>Scanner</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('screen-calendar', this)">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Diario</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const TARGET = { calories: 2000, protein: 150, carbs: 200, fats: 65 };
+
+        let db = JSON.parse(localStorage.getItem('calai_db')) || {};
+        let recipeBook = JSON.parse(localStorage.getItem('calai_recipebook')) || [];
+        let selectedCalendarDate = getFormattedDate(new Date());
+        let cameraStream = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initDateHeader();
+            renderHome();
+            renderCalendarSelector();
+            renderCalendarHistory();
+            renderRecipeBook();
+        });
+
+        function getFormattedDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function initDateHeader() {
+            const todayStr = new Date().toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' });
+            document.getElementById('home-today-date').innerText = todayStr;
+        }
+
+        function switchTab(screenId, navElement) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById(screenId).classList.add('active');
+            navElement.classList.add('active');
+
+            if (screenId === 'screen-scanner') {
+                startCamera();
+                renderRecipeBook();
+            } else {
+                stopCamera();
+            }
+
+            if (screenId === 'screen-home') renderHome();
+            if (screenId === 'screen-calendar') renderCalendarHistory();
+        }
+
+        function renderHome() {
+            const todayKey = getFormattedDate(new Date());
+            const todayFoods = db[todayKey] || [];
+
+            const totals = todayFoods.reduce((acc, item) => {
+                acc.calories += item.calories;
+                acc.protein += item.protein;
+                acc.carbs += item.carbs;
+                acc.fats += item.fats;
+                return acc;
+            }, { calories: 0, protein: 0, carbs: 0, fats: 0 });
+
+            const remaining = Math.max(0, TARGET.calories - totals.calories);
+            document.getElementById('calories-left').innerText = remaining;
+            document.getElementById('calories-consumed').innerText = `Consumate: ${totals.calories} kcal`;
+
+            const progress = Math.min(100, (totals.calories / TARGET.calories) * 100);
+            document.getElementById('calorie-progress').style.width = `${progress}%`;
+
+            document.getElementById('prot-val').innerText = totals.protein;
+            document.getElementById('carbs-val').innerText = totals.carbs;
+            document.getElementById('fats-val').innerText = totals.fats;
+
+            updateAiAdvice(totals);
+
+            const listContainer = document.getElementById('home-food-list');
+            if (todayFoods.length === 0) {
+                listContainer.innerHTML = `<div class="empty-state">Nessun cibo registrato oggi.<br>Usa lo scanner o il ricettario per iniziare!</div>`;
+            } else {
+                listContainer.innerHTML = todayFoods.map(food => createFoodItemHTML(food, todayKey)).join('');
+            }
+        }
+
+        function updateAiAdvice(totals) {
+            const adviceEl = document.getElementById('ai-advice-text');
+            const remProt = TARGET.protein - totals.protein;
+            const remCals = TARGET.calories - totals.calories;
+
+            if (remCals <= 0) {
+                adviceEl.innerHTML = "Hai raggiunto o superato il tuo obiettivo calorico giornaliero. Ottimo lavoro!";
+                return;
+            }
+
+            if (remProt > 40) {
+                adviceEl.innerHTML = `Ti mancano <strong>${remProt}g di proteine</strong>. Cerca di inserire fonti proteiche magre come pollo, tacchino o yogurt greco.`;
+            } else {
+                adviceEl.innerHTML = `Ti rimangono <strong>${remCals} kcal</strong>. Scegli un pasto bilanciato per chiudere la giornata nel migliore dei modi.`;
+            }
+        }
+
+        function renderCalendarSelector() {
+            const container = document.getElementById('date-picker');
+            container.innerHTML = '';
+
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateKey = getFormattedDate(d);
+                const dayName = d.toLocaleDateString('it-IT', { weekday: 'short' });
+                const dayNum = d.getDate();
+
+                const isSelected = dateKey === selectedCalendarDate;
+                const dateCard = document.createElement('div');
+                dateCard.className = `date-card ${isSelected ? 'active' : ''}`;
+                dateCard.onclick = () => {
+                    selectedCalendarDate = dateKey;
+                    renderCalendarSelector();
+                    renderCalendarHistory();
+                };
+
+                dateCard.innerHTML = `
+                    <div class="day-name">${dayName}</div>
+                    <div class="day-num">${dayNum}</div>
+                `;
+                container.appendChild(dateCard);
+            }
+        }
+
+        function renderCalendarHistory() {
+            const historyFoods = db[selectedCalendarDate] || [];
+            const listContainer = document.getElementById('history-food-list');
+            const totalKcalEl = document.getElementById('history-total-kcal');
+
+            document.getElementById('selected-date-label').innerText = selectedCalendarDate;
+
+            const totalKcal = historyFoods.reduce((sum, item) => sum + item.calories, 0);
+            totalKcalEl.innerText = `${totalKcal} kcal`;
+
+            if (historyFoods.length === 0) {
+                listContainer.innerHTML = `<div class="empty-state">Nessun cibo registrato per questa data.</div>`;
+            } else {
+                listContainer.innerHTML = historyFoods.map(food => createFoodItemHTML(food, selectedCalendarDate)).join('');
+            }
+        }
+
+        function renderRecipeBook() {
+            const container = document.getElementById('recipe-book-list');
+            if (recipeBook.length === 0) {
+                container.innerHTML = `<div class="empty-state" style="padding: 20px;">Nessun cibo salvato nel ricettario.<br>Scansiona un alimento per aggiungerlo qui!</div>`;
+                return;
+            }
+
+            container.innerHTML = recipeBook.map((food, index) => `
+                <div class="recipe-item" onclick="addFromRecipeBook(${index})">
+                    <div class="recipe-info">
+                        <span>${food.name}</span>
+                        <small>P: ${food.protein}g &bull; C: ${food.carbs}g &bull; G: ${food.fats}g</small>
+                    </div>
+                    <div class="recipe-add-badge">+${food.calories} kcal</div>
+                </div>
+            `).join('');
+        }
+
+        function addFromRecipeBook(index) {
+            const foodTemplate = recipeBook[index];
+            const todayKey = getFormattedDate(new Date());
+
+            const newFood = {
+                ...foodTemplate,
+                id: Date.now()
+            };
+
+            if (!db[todayKey]) db[todayKey] = [];
+            db[todayKey].push(newFood);
+            saveDB();
+
+            switchTab('screen-home', document.querySelectorAll('.nav-item')[0]);
+        }
+
+        async function startCamera() {
+            const video = document.getElementById('video');
+            const photoPreview = document.getElementById('photo-preview');
+            photoPreview.style.display = 'none';
+            video.style.display = 'block';
+
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' },
+                    audio: false
+                });
+                video.srcObject = cameraStream;
+            } catch (err) {
+                console.warn("Fotocamera non disponibile, usa la galleria.", err);
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+        }
+
+        function compressAndProcessImage(imgSource) {
+            const canvas = document.createElement('canvas');
+            const maxDimension = 600;
+            let width = imgSource.videoWidth || imgSource.width || 640;
+            let height = imgSource.videoHeight || imgSource.height || 480;
+
+            if (width > height) {
+                if (width > maxDimension) {
+                    height *= maxDimension / width;
+                    width = maxDimension;
+                }
+            } else {
+                if (height > maxDimension) {
+                    width *= maxDimension / height;
+                    height = maxDimension;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(imgSource, 0, 0, width, height);
+
+            const imageData = canvas.toDataURL('image/jpeg', 0.7);
+            
+            const photoPreview = document.getElementById('photo-preview');
+            photoPreview.src = imageData;
+            photoPreview.style.display = 'block';
+            document.getElementById('video').style.display = 'none';
+            stopCamera();
+
+            processImageWithAI(imageData);
+        }
+
+        document.getElementById('capture-btn').addEventListener('click', () => {
+            const video = document.getElementById('video');
+            compressAndProcessImage(video);
+        });
+
+        document.getElementById('gallery-btn').addEventListener('click', () => {
+            document.getElementById('file-input').click();
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (evt) {
+                    const img = new Image();
+                    img.onload = function() {
+                        compressAndProcessImage(img);
+                    };
+                    img.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // CHIAMATA API GEMINI
+        async function processImageWithAI(imageData) {
+            const spinner = document.getElementById('loading-spinner');
+            const btns = document.getElementById('scanner-buttons');
+
+            spinner.style.display = 'block';
+            btns.style.display = 'none';
+
+            const base64Data = imageData.split(',')[1];
+            
+            // CHIAVE API INSERITA CORRETTAMENTE
+            const apiKey = "AQ.Ab8RN6JlvTW-mAz-_vB3xVoVRBB6t6FfCG5GCN2huOmmX8Egrg";[span_0](start_span)[span_0](end_span)
+            
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+            const promptText = "Analizza questa foto. Se contiene cibo, restituisci un oggetto JSON con questi campi esatti: name (stringa, nome del piatto in italiano), calories (numero intero), protein (grammi, numero), carbs (grammi, numero), fats (grammi, numero). Se NON è cibo o non riesci a riconoscerlo, restituisci un JSON con name: 'Oggetto non riconosciuto' e tutti i valori a 0.";
+
+            const requestBody = {
+                contents: [{
+                    parts: [
+                        { text: promptText },
+                        { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+                    ]
+                }],
+                generationConfig: { response_mime_type: "application/json" }
+            };
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`Errore API: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponseText = data.candidates[0].content.parts[0].text;
+                const foodData = JSON.parse(aiResponseText);
+
+                if (foodData.calories > 0) {
+                    const todayKey = getFormattedDate(new Date());
+                    const newFood = {
+                        ...foodData,
+                        id: Date.now(),
+                        image: imageData
+                    };
+
+                    if (!db[todayKey]) db[todayKey] = [];
+                    db[todayKey].push(newFood);
+                    saveDB();
+
+                    if (!recipeBook.some(item => item.name.toLowerCase() === foodData.name.toLowerCase())) {
+                        recipeBook.push(foodData);
+                        saveRecipeBook();
+                    }
+
+                    switchTab('screen-home', document.querySelectorAll('.nav-item')[0]);
+                } else {
+                    alert("Non ho riconosciuto del cibo nell'immagine. Riprova con un'inquadratura più chiara!");
+                    switchTab('screen-scanner', document.querySelectorAll('.nav-item')[1]);
+                }
+            } catch (error) {
+                console.error("Errore durante l'analisi con Gemini:", error);
+                alert("Si è verificato un errore durante l'analisi o la chiave API non è stata accettata.");
+                switchTab('screen-scanner', document.querySelectorAll('.nav-item')[1]);
+            } finally {
+                spinner.style.display = 'none';
+                btns.style.display = 'flex';
+            }
+        }
+
+        function createFoodItemHTML(food, dateKey) {
+            return `
+                <div class="food-item">
+                    <img src="${food.image || 'https://via.placeholder.com/56'}" class="food-img" alt="${food.name}">
+                    <div class="food-info">
+                        <div class="food-name">${food.name}</div>
+                        <div class="food-details">P: ${food.protein}g &bull; C: ${food.carbs}g &bull; G: ${food.fats}g</div>
+                    </div>
+                    <div class="food-calories">+${food.calories} kcal</div>
+                    <button class="delete-btn" onclick="deleteFood(${food.id}, '${dateKey}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function deleteFood(id, dateKey) {
+            if (db[dateKey]) {
+                db[dateKey] = db[dateKey].filter(item => item.id !== id);
+                saveDB();
+                renderHome();
+                renderCalendarHistory();
+            }
+        }
+
+        function saveDB() {
+            localStorage.setItem('calai_db', JSON.stringify(db));
+        }
+
+        function saveRecipeBook() {
+            localStorage.setItem('calai_recipebook', JSON.stringify(recipeBook));
+        }
+    </script>
 </body>
 </html>
