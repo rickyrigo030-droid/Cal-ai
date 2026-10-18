@@ -683,7 +683,7 @@
             const base64Clean = base64Image.split(',')[1];
             const mimeType = base64Image.split(';')[0].split(':')[1];
 
-            const promptText = "Analizza questa immagine di cibo. Restituisci ESCLUSIVAMENTE un oggetto JSON valido con questa struttura esatta, senza markdown o altro testo: {\"name\": \"Nome del piatto\", \"description\": \"Ingredienti\", \"calories\": 300, \"protein\": 20, \"carbs\": 30, \"fats\": 10}";
+            const promptText = "Analizza questa immagine di cibo. Restituisci un JSON con questa struttura esatta: {\"name\": \"Nome\", \"description\": \"Ingredienti\", \"calories\": 300, \"protein\": 20, \"carbs\": 30, \"fats\": 10}";
 
             const payload = {
                 contents: [
@@ -714,10 +714,12 @@
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     let rawText = data.candidates[0].content.parts[0].text;
                     
-                    // Estrazione sicura del JSON anche se l'IA aggiunge blocchi di codice
-                    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-                    if (jsonMatch) {
-                        rawText = jsonMatch[0];
+                    // Pulizia avanzata per trovare le parentesi graffe del JSON ignorando tutto il resto
+                    const firstBrace = rawText.indexOf('{');
+                    const lastBrace = rawText.lastIndexOf('}');
+                    
+                    if (firstBrace !== -1 && lastBrace !== -1) {
+                        rawText = rawText.substring(firstBrace, lastBrace + 1);
                     }
                     
                     const foodInfo = JSON.parse(rawText);
@@ -735,7 +737,7 @@
             } catch (error) {
                 console.error("Errore API Gemini:", error);
                 loadingSpinner.style.display = 'none';
-                alert("Errore nell'analisi o formato non riconosciuto. Verifica la chiave API.");
+                alert("Errore nell'analisi. Verifica che la chiave sia attiva.");
             }
         }
 
