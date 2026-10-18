@@ -479,7 +479,7 @@
 
             <div id="mealsListContainer">
                 <div class="food-item-card" style="text-align: center; display: block; color: var(--text-muted);">
-                    Nessun cibo registrato oggi.<br>Usa lo scanner o il ricettario per iniziare!
+                    Nessun cibo registrato oggi.<br>Usa lo scanner per iniziare!
                 </div>
             </div>
         </div>
@@ -521,14 +521,6 @@
                         <i class="fas fa-plus"></i> Aggiungi al Diario
                     </button>
                 </div>
-            </div>
-
-            <div class="section-header" style="margin-top: 30px;">
-                <h2 class="section-title" style="font-size: 16px;">Armadietto / Ricettario (Cibi Frequenti)</h2>
-                <i class="fas fa-book" style="color: var(--text-muted);"></i>
-            </div>
-            <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">
-                Nessun cibo salvato nel ricettario.<br>Scansiona un alimento per aggiungerlo qui!
             </div>
         </div>
 
@@ -667,7 +659,7 @@
             const base64Clean = base64Image.split(',')[1];
             const mimeType = base64Image.split(';')[0].split(':')[1];
 
-            const promptText = "Analizza questa immagine di cibo. Restituisci un JSON con questa struttura esatta: {\"name\": \"Nome\", \"description\": \"Ingredienti\", \"calories\": 300, \"protein\": 20, \"carbs\": 30, \"fats\": 10}";
+            const promptText = "Analizza questa immagine di cibo. Restituisci ESCLUSIVAMENTE un JSON valido con questa struttura esatta: {\"name\": \"Nome Cibo\", \"description\": \"Ingredienti principali\", \"calories\": 300, \"protein\": 20, \"carbs\": 30, \"fats\": 10}";
 
             const payload = {
                 contents: [
@@ -698,7 +690,7 @@
                 const data = await response.json();
                 loadingSpinner.style.display = 'none';
 
-                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
                     let rawText = "";
                     for (const part of data.candidates[0].content.parts) {
                         if (part.text) {
@@ -706,6 +698,12 @@
                         }
                     }
                     
+                    const firstBrace = rawText.indexOf('{');
+                    const lastBrace = rawText.lastIndexOf('}');
+                    if (firstBrace !== -1 && lastBrace !== -1) {
+                        rawText = rawText.substring(firstBrace, lastBrace + 1);
+                    }
+
                     const foodInfo = JSON.parse(rawText);
                     currentScannedFood = foodInfo;
 
@@ -721,7 +719,7 @@
             } catch (error) {
                 console.error("Errore API Gemini:", error);
                 loadingSpinner.style.display = 'none';
-                alert("Errore nell'analisi. Verifica che la chiave sia attiva.");
+                alert("Errore durante la scansione: " + error.message);
             }
         }
 
@@ -738,7 +736,7 @@
             updateDashboard();
             renderMealsList();
 
-            document.getElementById('aiAdviceText').innerText = `Ottima scelta il piatto "${currentScannedFood.name}"! Continua così per raggiungere i tuoi macro giornalieri.`;
+            document.getElementById('aiAdviceText').innerText = `Ottima scelta il piatto "${currentScannedFood.name}"! Continua così per bilanciare i tuoi macronutrienti.`;
 
             currentScannedFood = null;
             document.getElementById('resultCard').style.display = 'none';
@@ -776,7 +774,7 @@
         function renderMealsList() {
             const container = document.getElementById('mealsListContainer');
             if (dailyData.meals.length === 0) {
-                container.innerHTML = `<div class="food-item-card" style="text-align: center; display: block; color: var(--text-muted);">Nessun cibo registrato oggi.<br>Usa lo scanner o il ricettario per iniziare!</div>`;
+                container.innerHTML = `<div class="food-item-card" style="text-align: center; display: block; color: var(--text-muted);">Nessun cibo registrato oggi.<br>Usa lo scanner per iniziare!</div>`;
                 return;
             }
 
